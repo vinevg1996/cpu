@@ -1,24 +1,16 @@
-module memory(clk, rst, idata, write, addr, odata,
-	// added_for_debug
-	out_reg0, out_reg1, out_reg2, out_reg3
-	);
+module memory(clk, rst, idata, write, addr, odata
+	         );
     parameter integer WIDTH = 32;
     localparam ADDR_WIDTH = $clog2(WIDTH);
     input [WIDTH-1:0] idata;
     input [ADDR_WIDTH-1:0] addr;
     input clk, rst, write;
     output [WIDTH-1:0] odata;
-    // added_for_debug
-    output [WIDTH-1:0] out_reg0;
-    output [WIDTH-1:0] out_reg1;
-    output [WIDTH-1:0] out_reg2;
-    output [WIDTH-1:0] out_reg3;
-/*
+
 wire [WIDTH-1:0] out_reg0;
 wire [WIDTH-1:0] out_reg1;
 wire [WIDTH-1:0] out_reg2;
 wire [WIDTH-1:0] out_reg3;
-*/
 wire [WIDTH-1:0] out_reg4;
 wire [WIDTH-1:0] out_reg5;
 wire [WIDTH-1:0] out_reg6;

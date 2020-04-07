@@ -1,6 +1,5 @@
-module registers(clk, rst, rnum1, rnum2, wnum, write, wdata, rdata1, rdata2,
-				// added_for_debug
-				out_reg0, out_reg1, out_reg2, out_reg3);
+module registers(clk, rst, rnum1, rnum2, wnum, write, wdata, rdata1, rdata2
+                );
     parameter integer WIDTH = 32;
     localparam ADDR_WIDTH = $clog2(WIDTH);
     input [ADDR_WIDTH-1:0] rnum1;
@@ -8,21 +7,14 @@ module registers(clk, rst, rnum1, rnum2, wnum, write, wdata, rdata1, rdata2,
     input [ADDR_WIDTH-1:0] wnum;
     input [WIDTH-1:0] wdata;
     input clk, rst, write;
-    //output reg [WIDTH-1:0] rdata1;
     output [WIDTH-1:0] rdata1;
-    //output reg [WIDTH-1:0] rdata2;
     output [WIDTH-1:0] rdata2;
-    // added_for_debug
-    output [WIDTH-1:0] out_reg0;
-    output [WIDTH-1:0] out_reg1;
-    output [WIDTH-1:0] out_reg2;
-    output [WIDTH-1:0] out_reg3;
-/*
+
 wire [WIDTH-1:0] out_reg0;
 wire [WIDTH-1:0] out_reg1;
 wire [WIDTH-1:0] out_reg2;
 wire [WIDTH-1:0] out_reg3;
-*/
+
 assign out_reg0 = 0;
 
 wire is_load_in_reg0;

@@ -5,7 +5,10 @@ module register(load, in, clk, rst, out);
     output reg [WIDTH-1:0] out;
 
     always @(posedge clk) begin
-        if (load) begin
+        if (rst) begin
+            out <= 0;
+        end
+        else if (load) begin
             out <= in;
         end
     end

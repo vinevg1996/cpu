@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-in_f = open('prog.asm', 'r')
-out_f = open('../mem_content_lw_command.list', 'w')
+import sys
+in_f = open(sys.argv[1], 'r')
+out_f = open('../mem_content.list', 'w')
 
 def parse_R_type(line, out_f):
     reg1 = int(line[1][1])
@@ -38,6 +39,7 @@ def parse_J_type(line, out_f):
 
 for line in in_f:
     words = line.split(" ");
+    #print words[0]
     if words[0] == "add":
         out_f.write("000000")
         parse_R_type(words, out_f)
@@ -61,5 +63,7 @@ for line in in_f:
     elif words[0] == "jump":
         out_f.write("000010")
         parse_J_type(words, out_f)
+    elif line == "nop\n":
+        out_f.write("11111100000000000000000000000000")
     out_f.write("\n")
 

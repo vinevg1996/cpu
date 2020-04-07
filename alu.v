@@ -7,7 +7,6 @@ module alu(clk, rst, in1, in2, opcode, zero, out);
     input [WIDTH-1:0] in1;
     input [WIDTH-1:0] in2;
     input [5:0] opcode;
-    //output reg zero;
     output zero;
     output reg [WIDTH-1:0] out;
 
