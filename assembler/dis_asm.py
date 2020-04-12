@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import sys
+#in_f = open('prog.asm', 'r')
+#in_f = open(argv[1], 'r')
 in_f = open(sys.argv[1], 'r')
 out_f = open('../mem_content.list', 'w')
 

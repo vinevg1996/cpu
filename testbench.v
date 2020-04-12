@@ -35,22 +35,31 @@ module testbench;
                  _cpu._data_path_cpu._regs_hazzard.curr_wnum,
                  );
         */
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d        %1d      %1d      ",
+        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, Pwnum, full1, full2, is_nop,     rs,    rt, prev_nop");
+        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d         %1d       %1d      %1d      %1d       %1d      %1d      %1d      %1d      ",
                  $time, clk, 
                  _cpu._data_path_cpu.curr_inst,
                  _cpu._data_path_cpu._regs.out_reg1,
                  _cpu._data_path_cpu._regs.out_reg2,
                  _cpu._data_path_cpu._regs.out_reg3,
                  _cpu._data_path_cpu._memory.out_reg0,
-                 _cpu._data_path_cpu._memory.out_reg1
+                 _cpu._data_path_cpu._memory.out_reg1,
+                 _cpu._data_path_cpu._regs_hazzard.prev_wnum,
+                 //_cpu._data_path_cpu.is_full_rnum1,
+                 //_cpu._data_path_cpu.is_full_rnum2,
+                 _cpu._control_path_cpu.is_full_rnum1,
+                 _cpu._control_path_cpu.is_full_rnum2,
+                 _cpu.is_nop,
+                 _cpu._data_path_cpu.rs,
+                 _cpu._data_path_cpu.rt,
+                 _cpu.is_previous_nop
                  );
         // simulation
         clk = 1;
         rst = 1;
         #5
         rst = 0;
-        #140
+        #80
         $finish;
     end
 

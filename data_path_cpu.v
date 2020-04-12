@@ -1,5 +1,6 @@
 module data_path_cpu(clk, rst, is_load_PC, is_write_reg, is_write_mem, opcode_alu,
                      is_R_type, is_I_type, is_J_type, is_write_from_mem, control_mux_for_PC,
+                     is_nop,
                      opcode, funct, is_alu_zero,
                      is_full_rnum1, is_full_rnum2
                     );
@@ -10,6 +11,7 @@ module data_path_cpu(clk, rst, is_load_PC, is_write_reg, is_write_mem, opcode_al
     input clk, rst, is_load_PC, is_write_reg, is_write_mem;
     input is_R_type, is_I_type, is_J_type, is_write_from_mem;
     input [1:0] control_mux_for_PC;
+    input is_nop;
     input [5:0] opcode_alu;
     output [5:0] opcode;
     output [5:0] funct;
@@ -77,8 +79,9 @@ mux #(.W(WIDTH), .N(2))
 
 
 // hazzards
-regs_hazzard _regs_hazzard(.clk(clk), .rst(rst), .rnum1(rs), .rnum2(rt), .wnum(rt),
-                           .is_write_reg(is_write_reg), 
+
+regs_hazzard _regs_hazzard(.clk(clk), .rst(rst), .rnum1(rs), .rnum2(rt), .wnum(out_mux_for_wnum),
+                           .is_write_reg(is_write_reg), .is_nop(is_nop),
                            .is_full_rnum1(is_full_rnum1), .is_full_rnum2(is_full_rnum2));
 
 adder _adder_plus_one(.clk(clk), .rst(rst), .load(is_load_PC),

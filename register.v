@@ -4,7 +4,7 @@ module register(load, in, clk, rst, out);
     input load, clk, rst;
     output reg [WIDTH-1:0] out;
 
-    always @(posedge clk) begin
+    always @(posedge clk, posedge rst) begin
         if (rst) begin
             out <= 0;
         end
