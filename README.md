@@ -26,4 +26,4 @@
 
   ./a.out
 
-  
+  gtkwave dump.vcd  
