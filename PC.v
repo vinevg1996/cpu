@@ -3,6 +3,7 @@ module PC(load, in, clk, rst, out);
     input [WIDTH-1:0] in;
     input load, clk, rst;
     output reg [WIDTH-1:0] out;
+    //output [WIDTH-1:0] out;
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin
@@ -12,5 +13,6 @@ module PC(load, in, clk, rst, out);
             out <= in;
         end
     end
+    
 
 endmodule

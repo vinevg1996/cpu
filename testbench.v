@@ -18,57 +18,54 @@ module testbench;
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, testbench);
-        /*
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, is_nop, prev, rnum1, rnum2, curr_wnum");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d        %1d      %1d      %1d       %1d       %1d       %1d       %1d       ",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs._reg1.out,
-                 _cpu._data_path_cpu._regs._reg2.out,
-                 _cpu._data_path_cpu._regs._reg3.out,
-                 _cpu._data_path_cpu._memory._reg0.out,
-                 _cpu._data_path_cpu._memory._reg1.out,
-                 _cpu._control_path_cpu.is_nop,
-                 _cpu._control_path_cpu.is_previous_nop,
-                 _cpu._data_path_cpu._regs_hazzard.rnum1, 
-                 _cpu._data_path_cpu._regs_hazzard.rnum2,
-                 _cpu._data_path_cpu._regs_hazzard.curr_wnum,
-                 );
-        */
-        /*
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, state, IMM, ID_EX_IMM");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d         %1d       %1d      %1d      %1d",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs.out_reg1,
-                 _cpu._data_path_cpu._regs.out_reg2,
-                 _cpu._data_path_cpu._regs.out_reg3,
-                 _cpu._data_path_cpu._memory.out_reg0,
-                 _cpu._data_path_cpu._memory.out_reg1,
-                 _cpu._data_path_cpu.curr_state,
-                 _cpu._data_path_cpu.expand_IMM,
-                 _cpu._data_path_cpu.ID_EX_expand_IMM
-                 );
-        */
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, state, mux_for_PC, is_alu_zero");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d         %1d       %1d       %1d       %1d       %1d",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs.out_reg1,
-                 _cpu._data_path_cpu._regs.out_reg2,
-                 _cpu._data_path_cpu._regs.out_reg3,
-                 _cpu._data_path_cpu._memory.out_reg0,
-                 _cpu._data_path_cpu._memory.out_reg1,
-                 _cpu._data_path_cpu.curr_state,
-                 _cpu._data_path_cpu.control_mux_for_PC,
-                 _cpu._control_path_cpu.is_alu_zero
-                 );
+/*
+$display("time,  clk, haz, alu_rs, alu_rt, rt_rd_3, rdata1, rdata2, pc_out, reg1, reg2, reg3,  mem0,   mem1,   opcode2,   opcode3,   opcode4,  opcode5");
+$monitor("%1d     %1d     %1d      %1d     %1d        %1d      %1d     %1d      %1d      %1d      %1d      %1d      %1d      %1d         %1d         %1d         %1d         %1d",
+         $time, clk, 
+         _cpu.is_hazard,
+         _cpu._cpu_step_2.is_send_from_alu_rs,
+         _cpu._cpu_step_2.is_send_from_alu_rt,
+         _cpu._fsm_step_2.out_rt_rd_mux_step_3,
+         _cpu._cpu_step_2.rdata1_step_2,
+         _cpu._cpu_step_2.rdata2_step_2,
+         _cpu._cpu_step_1.pc_out,
+         _cpu._cpu_step_2._regs.out_reg1,
+         _cpu._cpu_step_2._regs.out_reg2,
+         _cpu._cpu_step_2._regs.out_reg3,
+         _cpu._cpu_step_4._memory.out_reg0,
+         _cpu._cpu_step_4._memory.out_reg1,
+         _cpu.opcode_step_2,
+         _cpu.opcode_step_3,
+         _cpu.opcode_step_4,
+         _cpu.opcode_step_5
+         );
+
+*/
+
+$display("time,  clk, haz, pc_out, reg1,   reg2, reg3,  mem0,   mem1,  opcode2,   opcode3,   opcode4,  opcode5");
+$monitor("%1d     %1d        %1d      %1d      %1d      %1d      %1d       %1d      %1d         %1d         %1d         %1d         %1d",
+         $time, clk, 
+         _cpu.is_hazard,
+         _cpu._cpu_step_1.pc_out,
+         _cpu._cpu_step_2._regs.out_reg1,
+         _cpu._cpu_step_2._regs.out_reg2,
+         _cpu._cpu_step_2._regs.out_reg3,
+         _cpu._cpu_step_4._memory.out_reg0,
+         _cpu._cpu_step_4._memory.out_reg1,
+         _cpu.opcode_step_2,
+         _cpu.opcode_step_3,
+         _cpu.opcode_step_4,
+         _cpu.opcode_step_5
+         );
+
+
         // simulation
         clk = 1;
         rst = 1;
         #5
         rst = 0;
-        #1000
+        //#100
+        #200
         $finish;
     end
 

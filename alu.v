@@ -10,7 +10,7 @@ module alu(clk, rst, in1, in2, opcode, zero, out);
     output zero;
     output reg [WIDTH-1:0] out;
 
-    always @(in1, in2, opcode) begin
+    always @(*) begin
         case(opcode)
             6'b100000: out = in1 + in2;
             6'b100010: out = in1 - in2;
