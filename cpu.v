@@ -2,6 +2,11 @@ module cpu(clk, rst);
     parameter integer WIDTH = 32;
     localparam ADDR_WIDTH = $clog2(WIDTH);
     parameter integer INSTRACTION_NUMBERS = 8;
+    parameter integer MEM_SIZE = 32;
+    parameter integer CACHE_SIZE = 16;
+    localparam INDEX_SIZE = $clog2(CACHE_SIZE);
+    localparam LOG_INDEX_SIZE = $clog2(INDEX_SIZE);
+
     input clk, rst;
 
 //_________________________________
@@ -85,6 +90,9 @@ wire nop_step_2;
 wire nop_step_3;
 wire nop_step_4;
 wire is_load_for_launch_1_2;
+wire is_load_for_launch_2_3;
+wire is_load_for_launch_3_4;
+wire is_load_for_launch_4_5;
 wire is_branch_fault;
 
 wire is_send_from_alu_rs;
@@ -147,14 +155,14 @@ fsm_step_2 _fsm_step_2(// input
                        .is_send_from_mem_rs(is_send_from_mem_rs),
                        .is_send_from_mem_rt(is_send_from_mem_rt));
 
-reset_register #(.WIDTH(6)) _opcode_2_3_launch (.rst(rst), .nop_rst(nop_step_3), .clk(clk), .load(1'b1), .in(opcode_step_2), .out(opcode_step_3));
-reset_register #(.WIDTH(6)) _funct_2_3_launch (.rst(rst), .nop_rst(nop_step_3), .clk(clk), .load(1'b1), .in(funct_step_2), .out(funct_step_3));
-reset_register #(.WIDTH(5)) _out_rt_rd_mux_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(out_rt_rd_mux_step_2), .out(out_rt_rd_mux_step_3));
-reset_register #(.WIDTH(WIDTH)) _pc_plus_one_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(pc_plus_one_step_2), .out(pc_plus_one_step_3));
-reset_register #(.WIDTH(WIDTH)) _rdata1_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(rdata1_step_2), .out(rdata1_step_3));
-reset_register #(.WIDTH(WIDTH)) _rdata2_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(rdata2_step_2), .out(rdata2_step_3));
-reset_register #(.WIDTH(WIDTH)) _ext_IMM_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(ext_IMM_step_2), .out(ext_IMM_step_3));
-reset_register #(.WIDTH(WIDTH)) _ext_ADDR_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(ext_ADDR_step_2), .out(ext_ADDR_step_3));
+reset_register #(.WIDTH(6)) _opcode_2_3_launch (.rst(rst), .nop_rst(nop_step_3), .clk(clk), .load(is_load_for_launch_2_3), .in(opcode_step_2), .out(opcode_step_3));
+reset_register #(.WIDTH(6)) _funct_2_3_launch (.rst(rst), .nop_rst(nop_step_3), .clk(clk), .load(is_load_for_launch_2_3), .in(funct_step_2), .out(funct_step_3));
+reset_register #(.WIDTH(5)) _out_rt_rd_mux_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(out_rt_rd_mux_step_2), .out(out_rt_rd_mux_step_3));
+reset_register #(.WIDTH(WIDTH)) _pc_plus_one_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(pc_plus_one_step_2), .out(pc_plus_one_step_3));
+reset_register #(.WIDTH(WIDTH)) _rdata1_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(rdata1_step_2), .out(rdata1_step_3));
+reset_register #(.WIDTH(WIDTH)) _rdata2_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(rdata2_step_2), .out(rdata2_step_3));
+reset_register #(.WIDTH(WIDTH)) _ext_IMM_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(ext_IMM_step_2), .out(ext_IMM_step_3));
+reset_register #(.WIDTH(WIDTH)) _ext_ADDR_2_3_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_2_3), .in(ext_ADDR_step_2), .out(ext_ADDR_step_3));
 
 // step_3
 cpu_step_3 #(.WIDTH(WIDTH)) 
@@ -175,35 +183,61 @@ fsm_step_3 _fsm_step_3(// input
                        // output
                        .control_mux_for_alu(control_mux_for_alu), .alu_op(alu_op));
 
-reset_register #(.WIDTH(6)) _opcode_3_4_launch (.rst(rst), .nop_rst(nop_step_4), .clk(clk), .load(1'b1), .in(opcode_step_3), .out(opcode_step_4));
-reset_register #(.WIDTH(5)) _out_rt_rd_mux_3_4_launch (.rst(rst), .nop_rst(1'b0),  .clk(clk), .load(1'b1), .in(out_rt_rd_mux_step_3), .out(out_rt_rd_mux_step_4));
-reset_register #(.WIDTH(WIDTH)) _pc_plus_one_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(pc_plus_one_step_3), .out(pc_plus_one_step_4));
-reset_register #(.WIDTH(1)) _is_alu_zero_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(is_alu_zero_step_3), .out(is_alu_zero_step_4));
-reset_register #(.WIDTH(WIDTH)) _out_alu_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(out_alu_step_3), .out(out_alu_step_4));
-reset_register #(.WIDTH(WIDTH)) _rdata2_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(rdata2_step_3), .out(rdata2_step_4));
-reset_register #(.WIDTH(WIDTH)) _pc_plus_one_plus_IMM_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(pc_plus_one_plus_IMM_step_3), .out(pc_plus_one_plus_IMM_step_4));
-reset_register #(.WIDTH(WIDTH)) _ext_ADDR_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(ext_ADDR_step_3), .out(ext_ADDR_step_4));
+reset_register #(.WIDTH(6)) _opcode_3_4_launch (.rst(rst), .nop_rst(nop_step_4), .clk(clk), .load(is_load_for_launch_3_4), .in(opcode_step_3), .out(opcode_step_4));
+reset_register #(.WIDTH(5)) _out_rt_rd_mux_3_4_launch (.rst(rst), .nop_rst(1'b0),  .clk(clk), .load(is_load_for_launch_3_4), .in(out_rt_rd_mux_step_3), .out(out_rt_rd_mux_step_4));
+reset_register #(.WIDTH(WIDTH)) _pc_plus_one_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(pc_plus_one_step_3), .out(pc_plus_one_step_4));
+reset_register #(.WIDTH(1)) _is_alu_zero_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(is_alu_zero_step_3), .out(is_alu_zero_step_4));
+reset_register #(.WIDTH(WIDTH)) _out_alu_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(out_alu_step_3), .out(out_alu_step_4));
+reset_register #(.WIDTH(WIDTH)) _rdata2_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(rdata2_step_3), .out(rdata2_step_4));
+reset_register #(.WIDTH(WIDTH)) _pc_plus_one_plus_IMM_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(pc_plus_one_plus_IMM_step_3), .out(pc_plus_one_plus_IMM_step_4));
+reset_register #(.WIDTH(WIDTH)) _ext_ADDR_3_4_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_3_4), .in(ext_ADDR_step_3), .out(ext_ADDR_step_4));
 
 // step_4
-cpu_step_4 #(.WIDTH(WIDTH)) 
+
+// data wires
+wire tag, hit;
+wire [1:0] index, offset;
+wire [WIDTH-1:0] out_cache_step_4;
+wire [INDEX_SIZE-1:0] is_load_bus;
+// control wires
+wire control_tag;
+wire [LOG_INDEX_SIZE-1:0] control_index;
+wire [INDEX_SIZE-1:0] control_offset;
+wire [CACHE_SIZE-1:0] control_data_mux;
+
+cpu_step_4_cache_16 #(.WIDTH(WIDTH), .MEM_SIZE(MEM_SIZE), .CACHE_SIZE(CACHE_SIZE)) 
     _cpu_step_4(// input
                 .clk(clk), .rst(rst),
                 .out_alu_step_4(out_alu_step_4), .rdata2_step_4(rdata2_step_4),
                 // output
-                .out_memory_step_4(out_memory_step_4),
+                .out_data_step_4(out_memory_step_4),
+                .hit(hit), .tag(tag), 
+                .index(index), .offset(offset),
                 // control
-                .is_write_mem(is_write_mem));
+                .is_write_mem(is_write_mem),
+                .is_load_bus(is_load_bus),
+                .control_tag(control_tag), .control_index(control_index),
+                .control_offset(control_offset), 
+                .control_data_mux(control_data_mux));
 
-fsm_step_4 _fsm_step_4(// input 
-                       .clk(clk), .rst(rst),
-                       .opcode_step_4(opcode_step_4),
-                       // output
-                       .is_write_mem(is_write_mem));
+fsm_step_4_cache_16 #(.WIDTH(WIDTH), .MEM_SIZE(MEM_SIZE), .CACHE_SIZE(CACHE_SIZE)) 
+    _fsm_step_4(// input 
+               .clk(clk), .rst(rst),
+               .opcode_step_4(opcode_step_4),
+               .tag(tag), .index(index), 
+               .offset(offset), .hit(hit),
+               // output
+               .is_write_mem(is_write_mem),
+               .control_tag(control_tag), .control_index(control_index),
+               .control_offset(control_offset),
+               .is_load_bus(is_load_bus),
+               .control_data_mux(control_data_mux)
+               );
 
-reset_register #(.WIDTH(6)) _opcode_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(opcode_step_4), .out(opcode_step_5));
-reset_register #(.WIDTH(5)) _out_rt_rd_mux_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(out_rt_rd_mux_step_4), .out(out_rt_rd_mux_step_5));
-reset_register #(.WIDTH(WIDTH)) _out_alu_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(out_alu_step_4), .out(out_alu_step_5));
-reset_register #(.WIDTH(WIDTH)) _out_memory_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(1'b1), .in(out_memory_step_4), .out(out_memory_step_5));
+reset_register #(.WIDTH(6)) _opcode_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_4_5), .in(opcode_step_4), .out(opcode_step_5));
+reset_register #(.WIDTH(5)) _out_rt_rd_mux_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_4_5), .in(out_rt_rd_mux_step_4), .out(out_rt_rd_mux_step_5));
+reset_register #(.WIDTH(WIDTH)) _out_alu_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_4_5), .in(out_alu_step_4), .out(out_alu_step_5));
+reset_register #(.WIDTH(WIDTH)) _out_memory_4_5_launch (.rst(rst), .nop_rst(1'b0), .clk(clk), .load(is_load_for_launch_4_5), .in(out_memory_step_4), .out(out_memory_step_5));
 
 // step_5
 cpu_step_5 #(.WIDTH(WIDTH)) 
@@ -244,9 +278,13 @@ launch_nop #(.WIDTH(WIDTH), .INSTRACTION_NUMBERS(INSTRACTION_NUMBERS))
             _launch_nop(// input
                        .is_hazard(is_hazard), .is_branch_fault(is_branch_fault),
                        .pc_out(_cpu_step_1.pc_out),
+                       .is_hit(hit),
                        // output
                        .is_load_PC(is_load_PC),
                        .is_load_for_launch_1_2(is_load_for_launch_1_2),
+                       .is_load_for_launch_2_3(is_load_for_launch_2_3),
+                       .is_load_for_launch_3_4(is_load_for_launch_3_4),
+                       .is_load_for_launch_4_5(is_load_for_launch_4_5),
                        .nop_step_2(nop_step_2),
                        .nop_step_3(nop_step_3),
                        .nop_step_4(nop_step_4)
