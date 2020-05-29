@@ -1,53 +1,35 @@
-module memory(clk, rst, idata, write, addr, odata
-	         );
+module memory(clk, rst, idata, write, addr, 
+              odata, out_regs_bus
+              );
     parameter integer WIDTH = 32;
     localparam ADDR_WIDTH = $clog2(WIDTH);
+    parameter integer MEM_SIZE = 32;
     input [WIDTH-1:0] idata;
     input [ADDR_WIDTH-1:0] addr;
-    input clk, rst, write;
+    input clk, rst;
     output [WIDTH-1:0] odata;
+    output [WIDTH*MEM_SIZE-1:0] out_regs_bus;
+    // control
+    input write;
 
-wire [WIDTH-1:0] out_reg0;
-wire [WIDTH-1:0] out_reg1;
-wire [WIDTH-1:0] out_reg2;
-wire [WIDTH-1:0] out_reg3;
-wire [WIDTH-1:0] out_reg4;
-wire [WIDTH-1:0] out_reg5;
-wire [WIDTH-1:0] out_reg6;
-wire [WIDTH-1:0] out_reg7;
+wire [MEM_SIZE-1:0] is_load_in_regs_bus;
+wire [4:0] demux_addr;
+assign demux_addr = addr[4:0];
 
-wire is_load_in_reg0;
-wire is_load_in_reg1;
-wire is_load_in_reg2;
-wire is_load_in_reg3;
-wire is_load_in_reg4;
-wire is_load_in_reg5;
-wire is_load_in_reg6;
-wire is_load_in_reg7;
+demux #(.W(1), .N(MEM_SIZE)) _demux(write, demux_addr, 
+        is_load_in_regs_bus);
 
-demux #(.W(1), .N(8)) _demux(write, addr[2:0], 
-        {is_load_in_reg0, is_load_in_reg1, is_load_in_reg2, is_load_in_reg3,
-         is_load_in_reg4, is_load_in_reg5, is_load_in_reg6, is_load_in_reg7});
+generate
+    genvar i;
+    for(i = 0; i < MEM_SIZE; i = i + 1)
+    begin : assign_block
+        register _reg(.load(is_load_in_regs_bus[(MEM_SIZE-i)-1:(MEM_SIZE-i-1)]), 
+                      .clk(clk), .rst(rst), 
+                      .in(idata), .out(out_regs_bus[WIDTH*(MEM_SIZE-i)-1:WIDTH*(MEM_SIZE-i-1)]));
+    end
+endgenerate
 
-register _reg0(.load(is_load_in_reg0), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg0));
-register _reg1(.load(is_load_in_reg1), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg1));
-register _reg2(.load(is_load_in_reg2), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg2));
-register _reg3(.load(is_load_in_reg3), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg3));
-register _reg4(.load(is_load_in_reg4), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg4));
-register _reg5(.load(is_load_in_reg5), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg5));
-register _reg6(.load(is_load_in_reg6), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg6));
-register _reg7(.load(is_load_in_reg7), .clk(clk), .rst(rst), 
-               .in(idata), .out(out_reg7));
-
-mux #(.W(WIDTH), .N(8)) 
-    _mux({out_reg0, out_reg1, out_reg2, out_reg3, out_reg4, out_reg5, out_reg6, out_reg7}, 
-         addr[2:0], odata);
+mux #(.W(WIDTH), .N(MEM_SIZE)) 
+    _mux(out_regs_bus, demux_addr, odata);
 
 endmodule

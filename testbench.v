@@ -4,6 +4,7 @@
 
 module testbench;
     parameter integer WIDTH = 32;
+    parameter integer MEM_SIZE = 32;
     reg clk, rst;
 
     cpu _cpu(
@@ -18,57 +19,29 @@ module testbench;
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, testbench);
-        /*
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, is_nop, prev, rnum1, rnum2, curr_wnum");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d        %1d      %1d      %1d       %1d       %1d       %1d       %1d       ",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs._reg1.out,
-                 _cpu._data_path_cpu._regs._reg2.out,
-                 _cpu._data_path_cpu._regs._reg3.out,
-                 _cpu._data_path_cpu._memory._reg0.out,
-                 _cpu._data_path_cpu._memory._reg1.out,
-                 _cpu._control_path_cpu.is_nop,
-                 _cpu._control_path_cpu.is_previous_nop,
-                 _cpu._data_path_cpu._regs_hazzard.rnum1, 
-                 _cpu._data_path_cpu._regs_hazzard.rnum2,
-                 _cpu._data_path_cpu._regs_hazzard.curr_wnum,
-                 );
-        */
-        /*
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, state, IMM, ID_EX_IMM");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d         %1d       %1d      %1d      %1d",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs.out_reg1,
-                 _cpu._data_path_cpu._regs.out_reg2,
-                 _cpu._data_path_cpu._regs.out_reg3,
-                 _cpu._data_path_cpu._memory.out_reg0,
-                 _cpu._data_path_cpu._memory.out_reg1,
-                 _cpu._data_path_cpu.curr_state,
-                 _cpu._data_path_cpu.expand_IMM,
-                 _cpu._data_path_cpu.ID_EX_expand_IMM
-                 );
-        */
-        $display("time,  clk, curr_inst, out_reg1, out_reg2, out_reg3, mem0, mem1, state, mux_for_PC, is_alu_zero");
-        $monitor(" %1d     %1d        %1d        %1d        %1d         %1d         %1d       %1d       %1d       %1d       %1d",
-                 $time, clk, 
-                 _cpu._data_path_cpu.curr_inst,
-                 _cpu._data_path_cpu._regs.out_reg1,
-                 _cpu._data_path_cpu._regs.out_reg2,
-                 _cpu._data_path_cpu._regs.out_reg3,
-                 _cpu._data_path_cpu._memory.out_reg0,
-                 _cpu._data_path_cpu._memory.out_reg1,
-                 _cpu._data_path_cpu.curr_state,
-                 _cpu._data_path_cpu.control_mux_for_PC,
-                 _cpu._control_path_cpu.is_alu_zero
-                 );
+
+$display("time,  clk, hit,    reg1,   reg2, reg3, mem0, mem1  opcode2,   opcode3,   opcode4,  opcode5");
+$monitor("%1d     %1d        %1d      %1d      %1d      %1d      %1d      %1d         %1d         %1d         %1d         %1d",
+         $time, clk, 
+         _cpu.hit,
+         _cpu._cpu_step_2._regs.out_reg1,
+         _cpu._cpu_step_2._regs.out_reg2,
+         _cpu._cpu_step_2._regs.out_reg3,
+         _cpu._cpu_step_4._memory_32.out_regs_bus[WIDTH*(MEM_SIZE-0)-1:WIDTH*(MEM_SIZE-0-1)],
+         _cpu._cpu_step_4._memory_32.out_regs_bus[WIDTH*(MEM_SIZE-1)-1:WIDTH*(MEM_SIZE-1-1)],
+         _cpu.opcode_step_2,
+         _cpu.opcode_step_3,
+         _cpu.opcode_step_4,
+         _cpu.opcode_step_5
+         );
+
         // simulation
         clk = 1;
         rst = 1;
         #5
         rst = 0;
-        #1000
+        //#100
+        #160
         $finish;
     end
 

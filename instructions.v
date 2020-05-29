@@ -1,4 +1,4 @@
-module instractions(rst, curr_command, out_data);
+module instructions(rst, curr_command, out_data);
     parameter integer WIDTH = 32;
     parameter integer INSTRACTION_NUMBERS = 1;
     input rst;
